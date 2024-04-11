@@ -3,7 +3,7 @@
 #####################################################################################################################################
 
 .data
-	msgText: .asciiz "Welcome to Lingo!"
+	msgText: .asciiz "Welcome to Wordle!"
 	msgTextWord: .asciiz "The word to guess is: "
 	
 	blankChar: .asciiz " _ "
