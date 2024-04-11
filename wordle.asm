@@ -1,6 +1,5 @@
-#CS447 - Project 1 "Lingo"
-#Summer 2016
-#Author - Austin Marcus aim792@pitt.edu
+#CS2340 - Wordle Project
+#Authors - Jeremiah Boban, Veer Shah, Sourish Pasula, Vasudev Nair
 #####################################################################################################################################
 
 .data
