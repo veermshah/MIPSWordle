@@ -1,10 +1,18 @@
-#CS447 - Project 1 "Lingo"
-#Summer 2016
-#Author - Austin Marcus aim792@pitt.edu
-#####################################################################################################################################
+#WORDLE
+#By: Jeremiah Boban, Veer Shah, Vasudev Nair, Sourish Pasula
+#-----------------------------------------------------------------------------------------------------------------------
 
 .data
-	msgText: .asciiz "Welcome to Lingo!"
+	line1: .asciiz " __          ______  _____  _____  _      ______ \n"
+	line2: .asciiz " \\ \\        / / __ \\|  __ \\|  __ \\| |    |  ____|\n"
+	line3: .asciiz "  \\ \\  /\\  / / |  | | |__) | |  | | |    | |__   \n"
+	line4: .asciiz "   \\ \\/  \\/ /| |  | |  _  /| |  | | |    |  __|  \n"
+	line5: .asciiz "    \\  /\\  / | |__| | | \\ \\| |__| | |____| |____ \n"
+	line6: .asciiz "     \\/  \\/   \\____/|_|  \\_\\_____/|______|______|\n"
+	line7: .asciiz "                                                 \n"
+
+
+	msgText: .asciiz "Welcome to Wordle!"
 	msgTextWord: .asciiz "The word to guess is: "
 	
 	blankChar: .asciiz " _ "
@@ -50,15 +58,67 @@
 .align 2	
 	stateLC: .asciiz "state"
 .align 2
-	enterGuessMsg: .asciiz "Enter guess number "
+	apple: .asciiz "APPLE"
+.align 2
+	appleLC: .asciiz "apple"
+.align 2
+	bunny: .asciiz "BUNNY"
+.align 2
+	bunnyLC: .asciiz "bunny"
+.align 2
+	clock: .asciiz "CLOCK"
+.align 2
+	clockLC: .asciiz "clock"
+.align 2
+	drift: .asciiz "DRIFT"
+.align 2
+	driftLC: .asciiz "drift"
+.align 2
+	frost: .asciiz "FROST"
+.align 2
+	frostLC: .asciiz "frost"
+.align 2
+	glint: .asciiz "GLINT"
+.align 2
+	glintLC: .asciiz "glint"
+.align 2
+	hazel: .asciiz "HAZEL"
+.align 2
+	hazelLC: .asciiz "hazel"
+.align 2
+	jumbo: .asciiz "JUMBO"
+.align 2
+	jumboLC: .asciiz "jumbo"
+.align 2
+	knack: .asciiz "KNACK"
+.align 2
+	knackLC: .asciiz "knack"
+.align 2
+	lucky: .asciiz "LUCKY"
+.align 2
+	luckyLC: .asciiz "lucky"
+.align 2
+	mirth: .asciiz "MIRTH"
+.align 2
+	mirthLC: .asciiz "mirth"
+.align 2
+	novel: .asciiz "NOVEL"
+.align 2
+	novelLC: .asciiz "novel"
+.align 2
+	opera: .asciiz "OPERA"
+.align 2
+	operaLC: .asciiz "opera"
+.align 2
+	enterGuessMsg: .asciiz "Guess a five letter word "
 	colon: .asciiz ": "
 	rightPlace: .asciiz " is in the right place"
 	wrongPlace: .asciiz " is in the word but not the right place"
 	
-	winMsg: .asciiz "You win!"
-	loseMsg: .asciiz "All out of guesses! You lose!"
+	winMsg: .asciiz "WHOOSH! You win!"
+	loseMsg: .asciiz "BUMMER! Out of guesses! You lose!"
 	
-	playAgain: .asciiz "Would you like to play again? "
+	playAgain: .asciiz "Play again?(yes/no) "
 	yes: .asciiz "yes"
 	goodbye: .asciiz "Thank you for playing! Goodbye!"
 	contHolder: .space 4
@@ -68,6 +128,29 @@
 
 .text
 START:  #beginning of game play
+	# Display ASCII Wordle Title
+    	la $a0, line1
+   	li $v0, 4
+    	syscall
+
+    	la $a0, line2
+    	syscall
+
+    	la $a0, line3
+    	syscall
+
+    	la $a0, line4
+    	syscall
+
+    	la $a0, line5
+    	syscall
+
+    	la $a0, line6
+    	syscall
+
+    	la $a0, line7
+    	syscall
+
 	la $a0, msgText		#display welcome message
 	li $v0, 4		#print string syscall
 	syscall
