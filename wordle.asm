@@ -5,6 +5,7 @@
 .data
 	msgText: .asciiz "Welcome to Wordle!"
 	msgTextWord: .asciiz "The word to guess is: "
+	correctWord: .asciiz "The correct word is: "
 	
 	blankChar: .asciiz " _ "
 	lineBreak: .asciiz "\n"
@@ -104,11 +105,11 @@ RAND:   #generates random number to choose word
 	la $a0, bench		#load address of first word in data segment
 	add $a0, $a0, $s1	#offset address by random number * 10
 	move $s1, $a0           #save word address into $s1 
-	lb $a0, 0($a0)		#copy first character into $a0 to print
-	li $v0, 11		#print character syscall
-	syscall			#prints first character of chosen word
+	#lb $a0, 0($a0)		#copy first character into $a0 to print
+	#li $v0, 11		#print character syscall
+	#syscall			#prints first character of chosen word
 	
-	li $t0, 3		#max number of blanks to be printed, minus 1
+	li $t0, 4		#max number of blanks to be printed, minus 1
 	li $t1, 0		#clear contents of $t1
 	
 BLANK:  #prints out four underscores after the first character of chosen word
@@ -289,6 +290,16 @@ LOSE:	la $a0, loseMsg		#display lose message if all guesses exhausted
 	syscall
 	la $a0, lineBreak	#print a line break
 	li $v0, 4		#print string syscall
+	syscall
+	# Display the correct word
+	la $a0, correctWord	# Display message indicating the correct word
+	li $v0, 4		# Print string syscall
+	syscall
+	la $a0, 0($s1)		# Load address of the correct word
+	li $v0, 4		# Print string syscall
+	syscall
+	la $a0, lineBreak	# Print a line break
+	li $v0, 4		# Print string syscall
 	syscall
 	
 CONT:	#determine if user wants to play again, restart if yes or exit if no
