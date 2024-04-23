@@ -15,6 +15,7 @@
 	msgText: .asciiz "Welcome to Wordle!"
 	msgTextWord: .asciiz "The word to guess is: "
 	correctWord: .asciiz "The correct word is: "
+	lineInBetween: .asciiz "+-+-+-+-+-+"
 	
 	blankChar: .asciiz " _ "
 	lineBreak: .asciiz "\n"
@@ -249,6 +250,26 @@ LOOP:	bgt $t0, $s0, LOSE	#jump to "lose" message if all guesses have been used
 	syscall
 	
 	la $t5, guessHolder	#save address of user guess
+	
+	# Display the ASCII board
+	la $a0, lineInBetween # Load the address of the ASCII line
+	li $v0, 4          # Load the print string syscall code
+	syscall			# Execute the syscall to print the ASCII line
+	la $a0, lineBreak	#print a line break
+	li $v0, 4		#print string syscall
+	syscall            # Execute the syscall to print line break
+	move $a0, $t5    # Load the syscall code for printing a string into register $v0
+	li $v0, 4
+	syscall            # Execute the syscall to print the user's word
+	la $a0, lineBreak	#print a line break
+	li $v0, 4		#print string syscall
+	syscall            # Execute the syscall to print line break
+	la $a0, lineInBetween # Load the address of the ASCII line
+	li $v0, 4          # Load the print string syscall code
+	syscall			# Execute the syscall to print the ASCII line
+	la $a0, lineBreak	#print a line break
+	li $v0, 4		#print string syscall
+	syscall            # Execute the syscall to print line break
 	
 	#variables for CHECK loop, coming up
 	li $s3, 0		#clears $s3 for safety across multiple plays;
