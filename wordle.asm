@@ -19,15 +19,34 @@
 	
 	blankChar: .asciiz " _ "
 	lineBreak: .asciiz "\n"
+	debugMsg1: .asciiz "Copying addresses: \n"
+	
+	
+
 	
 	
 # Define ascii board
-	string1: .asciiz "| | | | |  \n"
-	string2: .asciiz "| | | | |  \n"
-	string3: .asciiz "| | | | |  \n"
-	string4: .asciiz "| | | | |  \n"
-	string5: .asciiz "| | | | |  \n"
-	string6: .asciiz "| | | | |  \n"
+.align 2
+string1: .asciiz "| | | | |  \n"
+.align 2
+string2: .asciiz "| | | | |  \n"
+.align 2
+string3: .asciiz "| | | | |  \n"
+.align 2
+string4: .asciiz "| | | | |  \n"
+.align 2
+string5: .asciiz "| | | | |  \n"
+	
+.align 2
+initial_string1: .asciiz "| | | | |  \n"
+.align 2
+initial_string2: .asciiz "| | | | |  \n"
+.align 2
+initial_string3: .asciiz "| | | | |  \n"
+.align 2
+initial_string4: .asciiz "| | | | |  \n"
+.align 2
+initial_string5: .asciiz "| | | | |  \n"
 
 # Define array to store addresses of strings
 board:
@@ -36,9 +55,7 @@ board:
     	.word string3
     	.word string4
     	.word string5
-    	.word string6
     	
-
 
 .align 2	
 	bench: .asciiz "BENCH"
@@ -146,6 +163,11 @@ board:
 	goodbye: .asciiz "Thank you for playing! Goodbye!"
 	contHolder: .space 4
 	guessHolder: .space 6
+	blankGuessHolder: .asciiz "      "
+	dictionary: .asciiz "dictionary.txt"
+	lengthError: .asciiz "Word not five letters long"
+	
+	
 	
 #####################################################################################################################################
 
@@ -177,9 +199,7 @@ START:  #beginning of game play
 	la $a0, msgText		#display welcome message
 	li $v0, 4		#print string syscall
 	syscall
-	la $a0, lineBreak	#print a line break
-	li $v0, 4		#print string syscall
-	syscall
+
 	
 	
 RAND:   #generates random number to choose word
@@ -205,9 +225,7 @@ RAND:   #generates random number to choose word
 	la $a0, bench		#load address of first word in data segment
 	add $a0, $a0, $s1	#offset address by random number * 10
 	move $s1, $a0           #save word address into $s1 
-	#lb $a0, 0($a0)		#copy first character into $a0 to print
-	#li $v0, 11		#print character syscall
-	#syscall			#prints first character of chosen word
+	
 	
 	li $t0, 4		#max number of blanks to be printed, minus 1
 	li $t1, 0		#clear contents of $t1
@@ -261,8 +279,6 @@ LOOP:	bgt $t0, $s0, LOSE	#jump to "lose" message if all guesses have been used
 	syscall
 	
 	la $t5, guessHolder	#save address of user guess
-
-	#move $t5, $t2 #copy guessHolder to t2
 	
 	# Load the base address of the board array into $t6
 	la $t6, board
@@ -306,7 +322,8 @@ copy_done:
 	# Display the ASCII board ######################################################################
 	la $a0, lineInBetween # Load the address of the ASCII line
 	li $v0, 4          # Load the print string syscall code
-	syscall			# Execute the syscall to print the ASCII line	
+	syscall			# Execute the syscall to print the ASCII line
+	
 	lw $a0, 0($t6)
 	li $v0, 4
     	syscall
@@ -339,12 +356,6 @@ copy_done:
 	li $v0, 4
     	syscall
     	
-    	la $a0, lineInBetween # Load the address of the ASCII line
-	li $v0, 4          # Load the print string syscall code
-	syscall			# Execute the syscall to print the ASCII line
-	lw $a0, 20($t6)
-	li $v0, 4
-    	syscall
 	
 	
 	
@@ -359,6 +370,15 @@ copy_done:
 ######################################################################################
 
 CHECK:	#loops over characters of guess and compares
+	# Open a file for reading
+	li $v0, 13          # Service number for open file
+	la $a0, dictionary    # Load address of the filename
+	li $a1, 0           # Open for reading
+	li $a2, 0           # Mode (ignored for reading)
+	syscall             # Call the system
+
+
+
 	bgt $s3, $s0, WIN	#jump to win message if all characters in right place
 				#(i.e. if RCRP counter > 4)
 	bgt $t3, $s0, AFTER	#skip rest of loop if all characters have been checked
@@ -503,7 +523,12 @@ CONT:	#determine if user wants to play again, restart if yes or exit if no
 	li $v0, 4		#print string syscall
 	syscall
 	
-	beq $t1, $t3, START	#return to beginning of game if user responded "yes"
+
+    beq $t1, $t3, START
+
+
+	
+
 	
 EXIT:	la $a0, goodbye		#display goodbye message
 	li $v0, 4		#print string syscall
