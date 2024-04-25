@@ -87,12 +87,14 @@ LOOP2:
     	
     	    	    	 # Loop through each character of guessHolder
 copy_loop:
+    lb $t8, 0($t5)          # Load character from guessHolder
+    beqz $t8, copy_done     # If character is null terminator, exit loop
+    
     li $t9, '|'             # Load the ASCII code for '|'
     sb $t9, 0($t7)          # Insert vertical line before the first character
     addi $t7, $t7, 1        # Increment string1 pointer
 
-    lb $t8, 0($t5)          # Load character from guessHolder
-    beqz $t8, copy_done     # If character is null terminator, exit loop
+    
     
     sb $t8, 0($t7)          # Store character into string1
     addi $t7, $t7, 1        # Increment string1 pointer
@@ -101,11 +103,7 @@ copy_loop:
     j copy_loop
 
 copy_done:
-    
-    # Insert line break
-    li $t9, '\n'            # Load the ASCII code for line break
-    sb $t9, 0($t7)          # Store line break into string1
-    addi $t7, $t7, 1        # Increment string1 pointer
+   
 
     # Terminate string1 with null character
     sb $zero, 0($t7)
