@@ -25,7 +25,3 @@ play_notes:
   addiu $s0, $s0, 4    # Move the pointer to the next note
   addiu $s2, $s2, 1    # Increment the note counter
   j play_notes         # Jump back to the start of the loop
-
-exit:
-  li $v0, 10 # exit
-  syscall
