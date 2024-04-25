@@ -16,7 +16,7 @@ length1: .word 5 # The length1 of the song (number of notes1) stored in memory
  
 .text
 
-main:
+main1:
   la   $s0, notes1      # Initialize the pointer
   
   li   $s4, 50        # Duration of base (i.e., eighth) note in milliseconds
