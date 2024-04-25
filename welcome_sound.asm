@@ -13,8 +13,6 @@ main2:
   li   $s2, 0          # Initialize the note counter
 
 play_notes:
-  beq  $s2, $s1, exit  # If we've played all the notes, exit
-
   lw   $a0, 0($s0)     # Load the current note
   move $a1, $s4        # Set duration of note 
   li   $a2, 0          # Set the MIDI patch [0-127] (zero is basic piano)
