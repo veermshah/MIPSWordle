@@ -27,15 +27,15 @@
 	
 # Define ascii board
 .align 2
-string1: .asciiz "| | | | |  \n"
+string1: .asciiz "| | | | | | \n"
 .align 2
-string2: .asciiz "| | | | |  \n"
+string2: .asciiz "| | | | | | \n"
 .align 2
-string3: .asciiz "| | | | |  \n"
+string3: .asciiz "| | | | | | \n"
 .align 2
-string4: .asciiz "| | | | |  \n"
+string4: .asciiz "| | | | | | \n"
 .align 2
-string5: .asciiz "| | | | |  \n"
+string5: .asciiz "| | | | | | \n"
 	
 .align 2
 initial_string1: .asciiz "| | | | |  \n"
@@ -279,8 +279,7 @@ LOOP:	bgt $t0, $s0, LOSE	#jump to "lose" message if all guesses have been used
 	syscall			#guessHolder now holds user input
 	
 #####################################################
-	#length validation
-    
+
     # Load address of guessHolder into $a0
     la $a0, guessHolder
     
@@ -301,12 +300,6 @@ check_length:
     # Check if length is less than 5
     li $t1, 6
     bne $t4, $t1, input_too_short  # Jump to input_too_short if length is less than 5
-    
-    
-    # Length is less than or equal to 5, continue with program
-    # Your code here
-   
-    
     
     j LOOP2
     
@@ -331,12 +324,7 @@ input_too_long:
     la $a0, inputShortError
     syscall
     
-    # Print prompt
-    #li $v0, 4
-   # la $a0, prompt
-    #syscall
-
-    
+   
     # Loop back to input section
     j LOOP
 	
@@ -360,12 +348,14 @@ LOOP2:
     	
     	    	    	 # Loop through each character of guessHolder
 copy_loop:
+    lb $t8, 0($t5)          # Load character from guessHolder
+    beqz $t8, copy_done     # If character is null terminator, exit loop
+    
     li $t9, '|'             # Load the ASCII code for '|'
     sb $t9, 0($t7)          # Insert vertical line before the first character
     addi $t7, $t7, 1        # Increment string1 pointer
 
-    lb $t8, 0($t5)          # Load character from guessHolder
-    beqz $t8, copy_done     # If character is null terminator, exit loop
+    
     
     sb $t8, 0($t7)          # Store character into string1
     addi $t7, $t7, 1        # Increment string1 pointer
@@ -374,12 +364,6 @@ copy_loop:
     j copy_loop
 
 copy_done:
-    
-    # Insert line break
-    li $t9, '\n'            # Load the ASCII code for line break
-    sb $t9, 0($t7)          # Store line break into string1
-    addi $t7, $t7, 1        # Increment string1 pointer
-
     # Terminate string1 with null character
     sb $zero, 0($t7)
     la $t5, guessHolder # Load the address of guessHolder into $t5 again
@@ -543,14 +527,14 @@ AFTER:	#jumps here if check is finished
 #############################################################################################
 	
 WIN:	
-	.include "win_sound.asm"
+	#.include "win_sound.asm"
 	la $a0, winMsg		#display win message if user guess correct
 	li $v0, 4		#print string syscall
 	syscall
 	la $a0, lineBreak	#print a line break
 	li $v0, 4		#print string syscall
 	syscall
-	j CONT			#jump to 'continue playing' option
+	j EXIT			#jump to 'continue playing' option
 	
 LOSE:	la $a0, loseMsg		#display lose message if all guesses exhausted
 	li $v0, 4		#print string syscall
@@ -559,7 +543,8 @@ LOSE:	la $a0, loseMsg		#display lose message if all guesses exhausted
 	li $v0, 4		#print string syscall
 	syscall
 	
-	.include "lose_sound.asm"
+	#.include "lose_sound.asm"
+	
 	# Display the correct word
 	la $a0, correctWord	# Display message indicating the correct word
 	li $v0, 4		# Print string syscall
@@ -570,33 +555,7 @@ LOSE:	la $a0, loseMsg		#display lose message if all guesses exhausted
 	la $a0, lineBreak	# Print a line break
 	li $v0, 4		# Print string syscall
 	syscall
-	
-CONT:	#determine if user wants to play again, restart if yes or exit if no
-	la $a0, playAgain	#ask user if they want to keep playing
-	li $v0, 4		#print string syscall
-	syscall
-	
-	li $v0, 8		#read string syscall
-	la $a0, contHolder	#specify address to hold string input
-	li $a1, 4		#max input length (3 here) + 1 for null terminator
-	syscall			#stringHolder now holds user input 
-	
-	la $t0, contHolder	#load address of stored user input
-	lw $t1, 0($t0)		#load user input content
-	la $t2, yes		#load address of "yes" string
-	lw $t3, 0($t2)		#load "yes" string to compare against user response
-	
-	la $a0, lineBreak	#print a line break
-	li $v0, 4		#print string syscall
-	syscall
-	
-
-    beq $t1, $t3, START
-
-
-	
-
-	
+		
 EXIT:	la $a0, goodbye		#display goodbye message
 	li $v0, 4		#print string syscall
 	syscall
