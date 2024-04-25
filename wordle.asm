@@ -123,12 +123,16 @@
 	yes: .asciiz "yes"
 	goodbye: .asciiz "Thank you for playing! Goodbye!"
 	contHolder: .space 4
-	guessHolder: .space 6
-	
+	guessHolder: .asciiz ""
+	len: .word 5                 # The length to compare to
+	inputShortError: .asciiz "Input length is incorrect. Please enter 5 characters.\n"
+	inputLongError: .asciiz "Input length is too long. Please enter only 5 characters.\n"
+
 #####################################################################################################################################
 
 .text
 START:  #beginning of game play
+	#.include "welcome_sound.asm"
 	# Display ASCII Wordle Title
     	la $a0, line1
    	li $v0, 4
@@ -217,11 +221,12 @@ GAME:	#signifies start of guessing portion
 	syscall
 
 	#variables for LOOP, coming up
-	li $s0, 4		#max number of guesses allowed, minus 1
+	li $s0, 5		#max number of guesses allowed, minus 1
 	li $t0, 0		#clear contents of $t0 to act as loop induction variable
 	
 #################################################################################################
 #Loop through guesses	
+
 #################################################################################################
 
 LOOP:	bgt $t0, $s0, LOSE	#jump to "lose" message if all guesses have been used
@@ -241,9 +246,73 @@ LOOP:	bgt $t0, $s0, LOSE	#jump to "lose" message if all guesses have been used
 	
 	li $v0, 8		#read string syscall
 	la $a0, guessHolder	#load address to store string input
-	li $a1, 6		#max input length (5 here) + 1 for null terminator
+	li $a1, 32		#max input length (5 here) + 1 for null terminator
 	syscall			#guessHolder now holds user input
 	
+#####################################################
+	#length validation
+    
+    # Load address of guessHolder into $a0
+    la $a0, guessHolder
+    
+    # Initialize counter for length
+    li $t4, 0
+    
+    # Loop to count characters until null terminator or maximum length
+count_loop:
+    lb $t1, 0($a0)          # Load byte from address in $a0 into $t1
+    beqz $t1, check_length  # If byte is null (end of string), exit loop
+    
+    addi $t4, $t4, 1        # Increment counter
+    
+    addi $a0, $a0, 1        # Move to next character in string
+    j count_loop            # Jump back to beginning of loop
+
+check_length:
+    # Check if length is less than 5
+    li $t1, 6
+    bne $t4, $t1, input_too_short  # Jump to input_too_short if length is less than 5
+    
+    
+    # Length is less than or equal to 5, continue with program
+    # Your code here
+   
+    
+    
+    j LOOP2
+    
+input_too_short:
+    # Print error message for input too short
+     la $a0, inputShortError
+     li $v0, 4
+    syscall
+    
+    # Print prompt
+    #li $v0, 4
+   # la $a0, prompt
+    #syscall
+
+    
+    # Loop back to input section
+    j LOOP
+    
+input_too_long:
+    # Print error message for input too short
+    li $v0, 4
+    la $a0, inputShortError
+    syscall
+    
+    # Print prompt
+    #li $v0, 4
+   # la $a0, prompt
+    #syscall
+
+    
+    # Loop back to input section
+    j LOOP
+	
+##################################################
+LOOP2:	
         la $a0, lineBreak	#print a line break
 	li $v0, 4		#print string syscall
 	syscall
@@ -261,6 +330,7 @@ LOOP:	bgt $t0, $s0, LOSE	#jump to "lose" message if all guesses have been used
 ######################################################################################
 
 CHECK:	#loops over characters of guess and compares
+	li $s0, 4
 	bgt $s3, $s0, WIN	#jump to win message if all characters in right place
 				#(i.e. if RCRP counter > 4)
 	bgt $t3, $s0, AFTER	#skip rest of loop if all characters have been checked
@@ -361,7 +431,9 @@ AFTER:	#jumps here if check is finished
 #End loop through guesses
 #############################################################################################
 	
-WIN:	la $a0, winMsg		#display win message if user guess correct
+WIN:	
+	.include "win_sound.asm"
+	la $a0, winMsg		#display win message if user guess correct
 	li $v0, 4		#print string syscall
 	syscall
 	la $a0, lineBreak	#print a line break
@@ -375,6 +447,8 @@ LOSE:	la $a0, loseMsg		#display lose message if all guesses exhausted
 	la $a0, lineBreak	#print a line break
 	li $v0, 4		#print string syscall
 	syscall
+	
+	.include "lose_sound.asm"
 	# Display the correct word
 	la $a0, correctWord	# Display message indicating the correct word
 	li $v0, 4		# Print string syscall
