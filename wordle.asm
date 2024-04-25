@@ -15,9 +15,48 @@
 	msgText: .asciiz "Welcome to Wordle!"
 	msgTextWord: .asciiz "The word to guess is: "
 	correctWord: .asciiz "The correct word is: "
+	lineInBetween: .asciiz "===========\n"
 	
 	blankChar: .asciiz " _ "
 	lineBreak: .asciiz "\n"
+	debugMsg1: .asciiz "Copying addresses: \n"
+	
+	
+
+	
+	
+# Define ascii board
+.align 2
+string1: .asciiz "| | | | |  \n"
+.align 2
+string2: .asciiz "| | | | |  \n"
+.align 2
+string3: .asciiz "| | | | |  \n"
+.align 2
+string4: .asciiz "| | | | |  \n"
+.align 2
+string5: .asciiz "| | | | |  \n"
+	
+.align 2
+initial_string1: .asciiz "| | | | |  \n"
+.align 2
+initial_string2: .asciiz "| | | | |  \n"
+.align 2
+initial_string3: .asciiz "| | | | |  \n"
+.align 2
+initial_string4: .asciiz "| | | | |  \n"
+.align 2
+initial_string5: .asciiz "| | | | |  \n"
+
+# Define array to store addresses of strings
+board:
+   	.word string1
+    	.word string2
+    	.word string3
+    	.word string4
+    	.word string5
+    	
+
 .align 2	
 	bench: .asciiz "BENCH"
 .align 2	
@@ -123,6 +162,10 @@
 	yes: .asciiz "yes"
 	goodbye: .asciiz "Thank you for playing! Goodbye!"
 	contHolder: .space 4
+  
+	blankGuessHolder: .asciiz "      "
+	dictionary: .asciiz "dictionary.txt"
+  
 	guessHolder: .asciiz ""
 	len: .word 5                 # The length to compare to
 	inputShortError: .asciiz "Input length is incorrect. Please enter 5 characters.\n"
@@ -159,16 +202,8 @@ START:  #beginning of game play
 	la $a0, msgText		#display welcome message
 	li $v0, 4		#print string syscall
 	syscall
-	la $a0, lineBreak	#print a line break
-	li $v0, 4		#print string syscall
-	syscall
+
 	
-	la $a0, msgTextWord	#display game instruction
-	li $v0, 4		#print string syscall
-	syscall
-	la $a0, lineBreak	#print a line break
-	li $v0, 4		#print string syscall
-	syscall
 	
 RAND:   #generates random number to choose word
 	li $v0, 30		#get time in ms
@@ -193,9 +228,7 @@ RAND:   #generates random number to choose word
 	la $a0, bench		#load address of first word in data segment
 	add $a0, $a0, $s1	#offset address by random number * 10
 	move $s1, $a0           #save word address into $s1 
-	#lb $a0, 0($a0)		#copy first character into $a0 to print
-	#li $v0, 11		#print character syscall
-	#syscall			#prints first character of chosen word
+	
 	
 	li $t0, 4		#max number of blanks to be printed, minus 1
 	li $t1, 0		#clear contents of $t1
@@ -203,10 +236,6 @@ RAND:   #generates random number to choose word
 BLANK:  #prints out four underscores after the first character of chosen word
 	bgt $t1, $t0, GAME	#quit and start guess portion if 
 				#appropriate number of blanks have been 
-				#printed
-	la $a0, blankChar	#display an underscore
-	li $v0, 4		#print string syscall
-	syscall	
 	
 	addi $t1, $t1, 1	#increment $t1
 	j BLANK			#another iteration of BLANK
@@ -319,6 +348,85 @@ LOOP2:
 	
 	la $t5, guessHolder	#save address of user guess
 	
+	# Load the base address of the board array into $t6
+	la $t6, board
+
+	# Calculate the offset based on the index in $t0
+	sll $t8, $t0, 2         # Calculate the offset (each word is 4 bytes)
+	add $t8, $t6, $t8       # Add the offset to the base address of the array
+
+	# Load the address of string1 using the calculated offset
+	lw $t7, 0($t8)
+    	
+    	    	    	 # Loop through each character of guessHolder
+copy_loop:
+    li $t9, '|'             # Load the ASCII code for '|'
+    sb $t9, 0($t7)          # Insert vertical line before the first character
+    addi $t7, $t7, 1        # Increment string1 pointer
+
+    lb $t8, 0($t5)          # Load character from guessHolder
+    beqz $t8, copy_done     # If character is null terminator, exit loop
+    
+    sb $t8, 0($t7)          # Store character into string1
+    addi $t7, $t7, 1        # Increment string1 pointer
+        
+    addi $t5, $t5, 1        # Increment guessHolder pointer
+    j copy_loop
+
+copy_done:
+    
+    # Insert line break
+    li $t9, '\n'            # Load the ASCII code for line break
+    sb $t9, 0($t7)          # Store line break into string1
+    addi $t7, $t7, 1        # Increment string1 pointer
+
+    # Terminate string1 with null character
+    sb $zero, 0($t7)
+    la $t5, guessHolder # Load the address of guessHolder into $t5 again
+
+    
+    
+        
+	# Display the ASCII board ######################################################################
+	la $a0, lineInBetween # Load the address of the ASCII line
+	li $v0, 4          # Load the print string syscall code
+	syscall			# Execute the syscall to print the ASCII line
+	
+	lw $a0, 0($t6)
+	li $v0, 4
+    	syscall
+    	
+    	la $a0, lineInBetween # Load the address of the ASCII line
+	li $v0, 4          # Load the print string syscall code
+	syscall			# Execute the syscall to print the ASCII line
+	lw $a0, 4($t6)
+	li $v0, 4
+    	syscall
+    	
+    	la $a0, lineInBetween # Load the address of the ASCII line
+	li $v0, 4          # Load the print string syscall code
+	syscall			# Execute the syscall to print the ASCII line	
+	lw $a0, 8($t6)
+	li $v0, 4
+    	syscall
+    	
+    	la $a0, lineInBetween # Load the address of the ASCII line
+	li $v0, 4          # Load the print string syscall code
+	syscall			# Execute the syscall to print the ASCII line
+	lw $a0, 12($t6)
+	li $v0, 4
+    	syscall
+    	
+    	la $a0, lineInBetween # Load the address of the ASCII line
+	li $v0, 4          # Load the print string syscall code
+	syscall			# Execute the syscall to print the ASCII line	
+	lw $a0, 16($t6)
+	li $v0, 4
+    	syscall
+    	
+	
+	
+	
 	#variables for CHECK loop, coming up
 	li $s3, 0		#clears $s3 for safety across multiple plays;
 				#to be used for right character, right place
@@ -330,7 +438,10 @@ LOOP2:
 ######################################################################################
 
 CHECK:	#loops over characters of guess and compares
+
+
 	li $s0, 4
+
 	bgt $s3, $s0, WIN	#jump to win message if all characters in right place
 				#(i.e. if RCRP counter > 4)
 	bgt $t3, $s0, AFTER	#skip rest of loop if all characters have been checked
@@ -479,7 +590,12 @@ CONT:	#determine if user wants to play again, restart if yes or exit if no
 	li $v0, 4		#print string syscall
 	syscall
 	
-	beq $t1, $t3, START	#return to beginning of game if user responded "yes"
+
+    beq $t1, $t3, START
+
+
+	
+
 	
 EXIT:	la $a0, goodbye		#display goodbye message
 	li $v0, 4		#print string syscall
