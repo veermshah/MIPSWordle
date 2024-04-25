@@ -1,10 +1,4 @@
-# MIPS Basics
-# CSC 211
-# Play a Song with MIDI+MIPS
-# Data section and original code to play the opening line by Jerod Weinman
-
-.data 
-# The following are MIDI-coded tones for Beethoven's "FÃ¼r Elise" 
+.data
 notes: 
 .word 75, 74, 73, 72
  
