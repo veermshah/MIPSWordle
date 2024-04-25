@@ -58,8 +58,3 @@ main:
   li   $a3, 64
   li   $v0, 33
   syscall
-
-    
-  li $v0, 10 # exit
-  syscall
- 
