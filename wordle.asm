@@ -15,10 +15,29 @@
 	msgText: .asciiz "Welcome to Wordle!"
 	msgTextWord: .asciiz "The word to guess is: "
 	correctWord: .asciiz "The correct word is: "
-	lineInBetween: .asciiz "+-+-+-+-+-+"
-	
+	lineInBetween: .asciiz "==========="
+
 	blankChar: .asciiz " _ "
 	lineBreak: .asciiz "\n"
+	
+	# Define ascii board
+	string1: .asciiz "| | | | |\n"
+	string2: .asciiz "| | | | |\n"
+	string3: .asciiz "| | | | |\n"
+	string4: .asciiz "| | | | |\n"
+	string5: .asciiz "| | | | |\n"
+	string6: .asciiz "| | | | |\n"
+
+# Define array to store addresses of strings
+board:
+   	.word string1
+    	.word string2
+    	.word string3
+    	.word string4
+    	.word string5
+    	.word string6
+	
+	
 .align 2	
 	bench: .asciiz "BENCH"
 .align 2	
@@ -117,14 +136,16 @@
 	rightPlace: .asciiz " is in the right place"
 	wrongPlace: .asciiz " is in the word but not the right place"
 	
-	winMsg: .asciiz "WHOOSH! You win!"
-	loseMsg: .asciiz "BUMMER! Out of guesses! You lose!"
+	winMsg: .asciiz "\nWHOOSH! You win!"
+	loseMsg: .asciiz "\nBUMMER! Out of guesses! You lose!"
 	
 	playAgain: .asciiz "Play again?(yes/no) "
 	yes: .asciiz "yes"
 	goodbye: .asciiz "Thank you for playing! Goodbye!"
 	contHolder: .space 4
 	guessHolder: .space 6
+	
+	verticalBar: .asciiz "|"
 	
 #####################################################################################################################################
 
@@ -197,16 +218,16 @@ RAND:   #generates random number to choose word
 	li $t0, 4		#max number of blanks to be printed, minus 1
 	li $t1, 0		#clear contents of $t1
 	
-BLANK:  #prints out four underscores after the first character of chosen word
-	bgt $t1, $t0, GAME	#quit and start guess portion if 
-				#appropriate number of blanks have been 
-				#printed
-	la $a0, blankChar	#display an underscore
-	li $v0, 4		#print string syscall
-	syscall	
-	
-	addi $t1, $t1, 1	#increment $t1
-	j BLANK			#another iteration of BLANK
+#BLANK:  #prints out four underscores after the first character of chosen word
+#	bgt $t1, $t0, GAME	#quit and start guess portion if 
+#				#appropriate number of blanks have been 
+#				#printed
+#	la $a0, blankChar	#display an underscore
+#	li $v0, 4		#print string syscall
+#	syscall	
+#	
+#	addi $t1, $t1, 1	#increment $t1
+#	j BLANK			#another iteration of BLANK
 	
 ###########################################################################################################
 #Start of guessing portion
@@ -226,6 +247,10 @@ GAME:	#signifies start of guessing portion
 #################################################################################################
 
 LOOP:	bgt $t0, $s0, LOSE	#jump to "lose" message if all guesses have been used
+
+	la $a0, lineBreak	#display right place message
+	li $v0, 4		#print string syscall
+	syscall
 	
 	la $a0, enterGuessMsg   #ask user to enter a guess
 	li $v0, 4		#print string syscall
@@ -245,31 +270,89 @@ LOOP:	bgt $t0, $s0, LOSE	#jump to "lose" message if all guesses have been used
 	li $a1, 6		#max input length (5 here) + 1 for null terminator
 	syscall			#guessHolder now holds user input
 	
-        la $a0, lineBreak	#print a line break
-	li $v0, 4		#print string syscall
-	syscall
-	
 	la $t5, guessHolder	#save address of user guess
 	
 	# Display the ASCII board
+	la $a0, lineBreak	#print a line break
+	li $v0, 4		#print string syscall
+	syscall            # Execute the syscall to print line break
+	
 	la $a0, lineInBetween # Load the address of the ASCII line
 	li $v0, 4          # Load the print string syscall code
 	syscall			# Execute the syscall to print the ASCII line
+	
 	la $a0, lineBreak	#print a line break
 	li $v0, 4		#print string syscall
 	syscall            # Execute the syscall to print line break
-	move $a0, $t5    # Load the syscall code for printing a string into register $v0
-	li $v0, 4
-	syscall            # Execute the syscall to print the user's word
+	
+	la $a0, verticalBar
+	li $v0, 4		# Load the syscall code for printing a string into register $v0
+	syscall
+	
+	# Print the first character of the string in $t5
+	move $a0, $t5        # Move the address of the string in $t5 to $a0
+	lb $a0, 0($a0)        # Load the first byte of the string into $a0
+	li $v0, 11           # Load the syscall code for printing a single character into register $v0
+	syscall              # Execute the syscall to print the first character
+	
+	la $a0, verticalBar
+	li $v0, 4		# Load the syscall code for printing a string into register $v0
+	syscall
+	
+	# Print the second character of the string in $t5
+	move $a0, $t5        # Move the address of the string in $t5 to $a0
+	lb $a0, 1($a0)        # Load the first byte of the string into $a0
+	li $v0, 11           # Load the syscall code for printing a single character into register $v0
+	syscall              # Execute the syscall to print the first character
+	
+	la $a0, verticalBar
+	li $v0, 4		# Load the syscall code for printing a string into register $v0
+	syscall
+	
+	# Print the third character of the string in $t5
+	move $a0, $t5        # Move the address of the string in $t5 to $a0
+	lb $a0, 2($a0)        # Load the first byte of the string into $a0
+	li $v0, 11           # Load the syscall code for printing a single character into register $v0
+	syscall              # Execute the syscall to print the first character
+	
+	la $a0, verticalBar
+	li $v0, 4		# Load the syscall code for printing a string into register $v0
+	syscall
+	
+	# Print the fourth character of the string in $t5
+	move $a0, $t5        # Move the address of the string in $t5 to $a0
+	lb $a0, 3($a0)        # Load the first byte of the string into $a0
+	li $v0, 11           # Load the syscall code for printing a single character into register $v0
+	syscall              # Execute the syscall to print the first character
+	
+	la $a0, verticalBar
+	li $v0, 4		# Load the syscall code for printing a string into register $v0
+	syscall
+	
+	# Print the fifth character of the string in $t5
+	move $a0, $t5        # Move the address of the string in $t5 to $a0
+	lb $a0, 4($a0)        # Load the first byte of the string into $a0
+	li $v0, 11           # Load the syscall code for printing a single character into register $v0
+	syscall              # Execute the syscall to print the first character
+	
+	la $a0, verticalBar
+	li $v0, 4		# Load the syscall code for printing a string into register $v0
+	syscall
+	
 	la $a0, lineBreak	#print a line break
 	li $v0, 4		#print string syscall
 	syscall            # Execute the syscall to print line break
+	
 	la $a0, lineInBetween # Load the address of the ASCII line
 	li $v0, 4          # Load the print string syscall code
 	syscall			# Execute the syscall to print the ASCII line
+	
 	la $a0, lineBreak	#print a line break
 	li $v0, 4		#print string syscall
 	syscall            # Execute the syscall to print line break
+	
+	
+	
 	
 	#variables for CHECK loop, coming up
 	li $s3, 0		#clears $s3 for safety across multiple plays;
@@ -319,6 +402,7 @@ EACH:	#check one character of guess against each character of word
 	
 SKIP:	#utility jump point to allow skipping index that was already checked 
 	addi $s5, $s5, 1	#increment $s5
+	
 	j EACH			#another iteration of EACH
 	
 	j INC			#keep from jumping to RCRP or RCWP if
@@ -363,12 +447,14 @@ RCWP:   #displays appropriate message if a character from guess is valid but
 	la $a0, lineBreak	#print a line break
 	li $v0, 4		#print string syscall
 	syscall
-
+	
+	
 INC:	#utility jump point to build condition gating for case of 
 	#right character wrong place vs. right character wrong place
 	addi $t3, $t3, 1	#increment $t3
 	j CHECK			#another iteration of CHECK
-
+	
+	
 ##################################################################################
 #End loop through characters of guess
 ##################################################################################
