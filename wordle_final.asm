@@ -166,7 +166,7 @@ board:
 	blankGuessHolder: .asciiz "      "
 	dictionary: .asciiz "dictionary.txt"
   
-	guessHolder: .asciiz ""
+	guessHolder: .space 32
 	len: .word 5                 # The length to compare to
 	inputShortError: .asciiz "Input length is incorrect. Please enter 5 characters.\n"
 	inputLongError: .asciiz "Input length is too long. Please enter only 5 characters.\n"
