@@ -62,7 +62,7 @@ found_match:
     syscall
 
     # Break out of both loops
-    j LOOP
+    j LOOP2
 
 next_char:
     # Increment $a0 to check the next character in guessHolder
