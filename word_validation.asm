@@ -61,8 +61,8 @@ found_match:
     li $v0, 4		#print string syscall
     syscall
 
-    # Break out of both loops
-    j LOOP2
+
+    j LOOP
 
 next_char:
     # Increment $a0 to check the next character in guessHolder
