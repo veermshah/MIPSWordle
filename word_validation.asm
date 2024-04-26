@@ -19,6 +19,65 @@ LOOP:	bgt $t0, $s0, LOSE	#jump to "lose" message if all guesses have been used
 	syscall			#guessHolder now holds user input
 	
 #####################################################
+
+	#Check for character type validation
+	# Load address of guessHolder into $a0
+	la $a3, guessHolder
+
+	# Load address of specialChars into $t0
+	la $s7, specialChars
+	
+    # Outer loop: iterate through each character in guessHolder
+outer_loop:
+    # Load a character from guessHolder into $t1
+    lb $t1, 0($a0)
+
+    # Check if $t1 is null terminator (end of string)
+    beqz $t1, end_outer_loop
+
+    # Set address of specialChars to $s7
+    la $s7, specialChars
+
+    # Inner loop: iterate through each character in specialChars
+inner_loop:
+    # Load a character from specialChars into $t2
+    lb $t2, 0($s7)
+
+    # Check if $t2 is null terminator (end of specialChars)
+    beqz $t2, next_char
+
+    # Compare $t1 (character from guessHolder) with $t2 (character from specialChars)
+    beq $t1, $t2, found_match
+
+    # Increment $s7 to check the next character in specialChars
+    addi $s7, $s7, 1
+
+    # Continue inner loop
+    j inner_loop
+
+found_match:
+    
+    la $a0, inputTypeError	#print a line break
+    li $v0, 4		#print string syscall
+    syscall
+
+    # Break out of both loops
+    j LOOP2
+
+next_char:
+    # Increment $a0 to check the next character in guessHolder
+    addi $a0, $a0, 1
+
+    # Continue outer loop
+    j outer_loop
+
+end_outer_loop:
+    # End of outer loop
+	
+	   
+   
+	
+length_validation:	
 	#length validation
     
     # Load address of guessHolder into $a0
@@ -69,9 +128,8 @@ input_too_short:
 	
 ##################################################
 LOOP2:	
-        la $a0, lineBreak	#print a line break
-	li $v0, 4		#print string syscall
-	syscall
+
+
 	
 	la $t5, guessHolder	#save address of user guess
 	
