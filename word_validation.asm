@@ -61,7 +61,7 @@ found_match:
     li $v0, 4		#print string syscall
     syscall
 
-
+    # Break out of both loops
     j LOOP
 
 next_char:
