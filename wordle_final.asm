@@ -27,15 +27,15 @@
 	
 # Define ascii board
 .align 2
-string1: .asciiz "| | | | |  \n"
+string1: .asciiz "| | | | | | \n"
 .align 2
-string2: .asciiz "| | | | |  \n"
+string2: .asciiz "| | | | | | \n"
 .align 2
-string3: .asciiz "| | | | |  \n"
+string3: .asciiz "| | | | | | \n"
 .align 2
-string4: .asciiz "| | | | |  \n"
+string4: .asciiz "| | | | | | \n"
 .align 2
-string5: .asciiz "| | | | |  \n"
+string5: .asciiz "| | | | | | \n"
 	
 .align 2
 initial_string1: .asciiz "| | | | |  \n"
@@ -170,6 +170,9 @@ board:
 	len: .word 5                 # The length to compare to
 	inputShortError: .asciiz "Input length is incorrect. Please enter 5 characters.\n"
 	inputLongError: .asciiz "Input length is too long. Please enter only 5 characters.\n"
+	inputTypeError: .asciiz "Invalid input: Please enter only alphabet letters\n"
+	specialChars: .asciiz "1234567890[]{}!@#$%^&*()-_=+'\";:.>,</?`~\\|"
+
 
 #####################################################################################################################################
 
