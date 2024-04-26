@@ -31,4 +31,10 @@ To play the game:
 
 ## Tips & Strategies
 
-- **Start Basic:** Try g
+- **Start Basic:** Try guessing commonly used words to see which letters are correct
+- **Listen to the Program Output:** Keep in mind the position of letters
+- **Process of Elimination:** Use the incorrect guesses to eliminate incorrect letters
+
+# Happy Wordle-ing! P.S. Make sure to turn up your sound.
+- Jeremiah Boban, Veer Shah, Vasudev Nair, Sourish Pasula
+
