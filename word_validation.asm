@@ -15,7 +15,7 @@ LOOP:	bgt $t0, $s0, LOSE	#jump to "lose" message if all guesses have been used
 	
 	li $v0, 8		#read string syscall
 	la $a0, guessHolder	#load address to store string input
-	li $a1, 32		#max input length (5 here) + 1 for null terminator
+	li $a1, 32		#max input length 
 	syscall			#guessHolder now holds user input
 	
 #####################################################
